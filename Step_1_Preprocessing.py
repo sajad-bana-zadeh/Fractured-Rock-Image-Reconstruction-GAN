@@ -47,7 +47,9 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.axis('off')
             plt.show()
         
-
+        # 2. Apply a blur to help HoughCircles (reduces noise)
+        blurred_img = cv2.medianBlur(img, 5)
+        
         # return resized_img
 
     except Exception as e:
