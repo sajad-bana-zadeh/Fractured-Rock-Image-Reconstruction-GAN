@@ -45,11 +45,53 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.title("Original Image")
             plt.imshow(img, cmap='gray')
             plt.axis('off')
-            plt.show()
+            # plt.show()
         
         # 2. Apply a blur to help HoughCircles (reduces noise)
         blurred_img = cv2.medianBlur(img, 5)
-        
+
+        # 3. Detect circles using HoughCircles
+        # Parameters for HoughCircles often need fine-tuning per dataset
+        # dp=1: Inverse ratio of the accumulator resolution to the image resolution.
+        # minDist: Minimum distance between the centers of the detected circles.
+        # param1: Upper threshold for the Canny edge detector (internal).
+        # param2: Accumulator threshold for the circle centers at the detection stage.
+        # minRadius/maxRadius: Expected range of radii of circles.
+        circles = cv2.HoughCircles(
+            blurred_img,
+            cv2.HOUGH_GRADIENT,
+            dp=1,
+            minDist=original_h // 8, # Minimum distance between centers
+            param1=100, # Canny upper threshold
+            param2=30,  # Accumulator threshold
+            minRadius=original_h // 4, # Minimum radius
+            maxRadius=original_h // 2 # Maximum radius
+        )
+
+        # 3.1. If circles is None
+        if circles is None:
+            print(f"No circles found in {image_path}. Skipping.")
+            return None
+
+        # 3.2. Take the first (most prominent) detected circle
+        # Ensure coordinates are integers for pixel indexing and calculations
+        x_circle, y_circle, r_circle = circles[0, 0].astype(int)
+
+        # 3.3. Ensure radius is not too small (avoids issues with tiny detections)
+        if r_circle < 20: # Increased threshold for a meaningful inner square
+            print(f"Warning: Detected radius too small ({r_circle}) for {image_path}. Skipping.")
+            return None
+
+        # 3.4. --- Visualizing the detected circle (for plot_steps) ---
+        if plot_steps:
+            img_with_circle = img.copy()
+            cv2.circle(img_with_circle, (x_circle, y_circle), r_circle, 255, 2) # Draw circle
+            plt.subplot(1, 5, 2)
+            plt.title("Detected Circle")
+            plt.imshow(img_with_circle, cmap='gray')
+            plt.axis('off')
+            plt.show()
+            
         # return resized_img
 
     except Exception as e:
