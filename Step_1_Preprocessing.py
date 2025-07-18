@@ -134,6 +134,28 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             print(f"Error: Invalid actual crop dimensions ({actual_cropped_width}x{actual_cropped_height}) for {image_path}. Skipping.")
             return None
 
+        # 6. Crop the original image to this inscribed square
+        cropped_img = img[y1:y2, x1:x2]
+
+        # 6.1. If crop size
+        if cropped_img.size == 0:
+            print(f"Error: Cropped image is empty after slicing for {image_path}. Skipping.")
+            return None
+
+        # 6.2. Plot
+        if plot_steps:
+            plt.subplot(1, 5, 3)
+            plt.title(f"Inscribed Cropped Image ({cropped_img.shape[1]}x{cropped_img.shape[0]})")
+            plt.imshow(cropped_img, cmap='gray')
+            plt.axis('off')
+
+            # Optional: Visualize the square on the original image
+            img_with_square = img.copy()
+            cv2.rectangle(img_with_square, (x1, y1), (x2, y2), 255, 2)
+            plt.subplot(1, 5, 4)
+            plt.title("Original with Inscribed Square")
+            plt.imshow(img_with_square, cmap='gray')
+            plt.axis('off')
         # return resized_img
 
     except Exception as e:
