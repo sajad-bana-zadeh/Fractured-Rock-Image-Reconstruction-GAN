@@ -73,8 +73,24 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         # Take the first and likely most confident circle detected
         x, y, r = circles[0, 0]
 
-        # 4. Get the minimum enclosing circle for the largest contour
-        ((x, y), radius) = cv2.minEnclosingCircle(largest_contour)
+        # 4. Create a clean circular mask based on the detected circle
+        mask = np.zeros_like(img, dtype=np.uint8)
+        cv2.circle(mask, (x, y), r, 255, -1) # Draw filled white circle
+
+        # 4.1.Apply the mask to the original image
+        masked_img = cv2.bitwise_and(img, img, mask=mask)
+
+        # 4.2. plot image if plot_steps == true
+        if plot_steps:
+            plt.subplot(1, 5, 2)
+            plt.title("Detected Circle Mask")
+            plt.imshow(mask, cmap='gray')
+            plt.axis('off')
+
+            plt.subplot(1, 5, 3)
+            plt.title("Masked Original Image")
+            plt.imshow(masked_img, cmap='gray')
+            plt.axis('off')
 
         # Ensure radius is not zero or too small
         if radius < 5: # A small threshold to avoid issues with tiny artifacts
