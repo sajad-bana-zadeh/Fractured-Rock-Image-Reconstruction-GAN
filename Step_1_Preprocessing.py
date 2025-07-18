@@ -77,23 +77,24 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         center_x, center_y = int(x), int(y)
         radius = int(radius) # Cast to int for pixel coordinates
 
-        # Determine the square's top-left corner and side length
+        # 5.1. Determine the square's top-left corner and side length
         # We want to crop a square of side_length = 2 * radius around the center
         crop_size = 2 * radius
         x_start = max(0, center_x - radius)
         y_start = max(0, center_y - radius)
 
-        # Ensure crop_size does not exceed image boundaries
+        # 5.2. Ensure crop_size does not exceed image boundaries
         # This part ensures we don't go out of bounds when calculating x_end, y_end
         x_end = min(img.shape[1], x_start + crop_size)
         y_end = min(img.shape[0], y_start + crop_size)
 
-        # Adjust x_start/y_start if the calculated end goes beyond image boundary
+        # 5.3. Adjust x_start/y_start if the calculated end goes beyond image boundary
         # This helps in cases where the circle might be very close to an edge
         if (x_end - x_start) < crop_size:
             x_start = max(0, x_end - crop_size)
         if (y_end - y_start) < crop_size:
             y_start = max(0, y_end - crop_size)
+        
 
         return None
 
