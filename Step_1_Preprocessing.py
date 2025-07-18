@@ -65,6 +65,9 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         # 3.1 Find the largest contour, which should be our circle
         largest_contour = max(contours, key=cv2.contourArea)
 
+        # 4. Get the minimum enclosing circle for the largest contour
+        ((x, y), radius) = cv2.minEnclosingCircle(largest_contour)
+
         return None
 
     except Exception as e:
