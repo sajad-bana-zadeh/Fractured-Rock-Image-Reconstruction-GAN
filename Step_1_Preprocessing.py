@@ -25,4 +25,9 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
     Returns:
         numpy.ndarray: The preprocessed square image, or None if processing fails.
     """
-    return None
+    try:
+        return None
+
+    except Exception as e:
+        print(f"An error occurred while processing {image_path}: {e}")
+        return None
