@@ -35,14 +35,17 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             print(f"Error: Could not load image from {image_path}")
             return None
 
+        # 1.1. 
         original_h, original_w = img.shape[:2]
 
+        # 1.2. plot
         if plot_steps:
             plt.figure(figsize=(20, 6))
             plt.subplot(1, 5, 1)
             plt.title("Original Image")
             plt.imshow(img, cmap='gray')
             plt.axis('off')
+            plt.show()
         
 
         # return resized_img
