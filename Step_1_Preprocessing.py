@@ -97,48 +97,43 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             print(f"Warning: Radius too small ({radius:.2f}) for {image_path}. Skipping.")
             return None
         
-        # 5. Calculate the bounding box for the square crop
-        center_x, center_y = int(x), int(y)
-        radius = int(radius) # Cast to int for pixel coordinates
+        # 5. Crop the image to a square bounding box around the detected circle
+        # Determine the square's top-left corner and side length
+        crop_size = 2 * r # The side length of the square will be the diameter
+        x_start = max(0, x - r)
+        y_start = max(0, y - r)
 
-        # 5.1. Determine the square's top-left corner and side length
-        # We want to crop a square of side_length = 2 * radius around the center
-        crop_size = 2 * radius
-        x_start = max(0, center_x - radius)
-        y_start = max(0, center_y - radius)
-
-        # 5.2. Ensure crop_size does not exceed image boundaries
-        # This part ensures we don't go out of bounds when calculating x_end, y_end
+        # 5.1. Ensure crop_size does not exceed image boundaries and adjust start if needed
         x_end = min(img.shape[1], x_start + crop_size)
         y_end = min(img.shape[0], y_start + crop_size)
 
-        # 5.3. Adjust x_start/y_start if the calculated end goes beyond image boundary
-        # This helps in cases where the circle might be very close to an edge
+        # 5.2. Adjust start coordinates if the end point implies a smaller crop_size
         if (x_end - x_start) < crop_size:
             x_start = max(0, x_end - crop_size)
         if (y_end - y_start) < crop_size:
             y_start = max(0, y_end - crop_size)
-        
-        # 6. Crop the image
-        cropped_img = img[y_start:y_end, x_start:x_end]
 
-        #‌ 6.2. plot image if plot_steps == true
+        # 5.3. cropped image
+        cropped_img = masked_img[y_start:y_end, x_start:x_end]
+
+        # 5.4. plot image if plot_steps == true
         if plot_steps:
-            plt.subplot(1, 4, 3)
+            plt.subplot(1, 5, 4)
             plt.title(f"Cropped Image ({cropped_img.shape[1]}x{cropped_img.shape[0]})")
             plt.imshow(cropped_img, cmap='gray')
             plt.axis('off')
-            # plt.show()
-    
-        # 7. Resize the cropped image to the desired output size
+        
+        # 6. Resize the cropped image to the desired output size
+        # Use INTER_AREA for shrinking, INTER_LINEAR or INTER_CUBIC for enlarging
         resized_img = cv2.resize(cropped_img, output_size, interpolation=cv2.INTER_AREA)
 
-        #‌ 7.2. plot image if plot_steps == true
+        # 6.1. plot image if plot_steps == true
         if plot_steps:
-            plt.subplot(1, 4, 4)
+            plt.subplot(1, 5, 5)
             plt.title(f"Resized Image ({output_size[0]}x{output_size[1]})")
             plt.imshow(resized_img, cmap='gray')
             plt.axis('off')
+            plt.tight_layout()
             plt.show()
 
         return resized_img
