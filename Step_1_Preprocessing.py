@@ -90,8 +90,26 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.title("Detected Circle")
             plt.imshow(img_with_circle, cmap='gray')
             plt.axis('off')
-            plt.show()
-            
+            # plt.show()
+
+        # 4. Calculate the side length of the largest square inscribed in the circle
+        # Side length 's' of a square inscribed in a circle with radius 'r' is s = r * sqrt(2)
+        # However, for pixel coordinates, we often just use 2 * r / sqrt(2) = sqrt(2) * r
+        # More robustly: the corners of the inscribed square are (x +/- r/sqrt(2), y +/- r/sqrt(2))
+        # So the side length of the square is 2 * (r / sqrt(2)) = 2 * r / 1.414 = approx 1.414 * r
+        # Let's define the side length as 's'
+        s = int(r_circle * np.sqrt(2) / 2) * 2 # Ensure it's an even number if preferred, or just int(r_circle * np.sqrt(2)) for total side
+
+        # 4.1. A simpler way to get half_side for calculating top-left from center:
+        half_side = int(r_circle / np.sqrt(2))
+        side_length = 2 * half_side
+
+        # 4.2. If side length
+        if side_length <= 0:
+            print(f"Error: Calculated side_length for inner square is zero or negative ({side_length}). Skipping.")
+            return None
+
+
         # return resized_img
 
     except Exception as e:
