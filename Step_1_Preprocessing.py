@@ -16,7 +16,9 @@ import matplotlib.pyplot as plt
 def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
     """
     Loads an image, robustly identifies the main circular rock region,
-    crops it to a square, and resizes it. This version aims to exclude annotations.
+    then crops the LARGEST INSCRIBED SQUARE from WITHIN that circle,
+    and resizes it. This version aims to remove all black borders and
+    circular outlines, yielding only the internal rock structure.
 
     Args:
         image_path (str): Path to the input image.
@@ -92,10 +94,6 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.imshow(masked_img, cmap='gray')
             plt.axis('off')
 
-        # Ensure radius is not zero or too small
-        if radius < 5: # A small threshold to avoid issues with tiny artifacts
-            print(f"Warning: Radius too small ({radius:.2f}) for {image_path}. Skipping.")
-            return None
         
         # 5. Crop the image to a square bounding box around the detected circle
         # Determine the square's top-left corner and side length
@@ -144,17 +142,12 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         return None
 
 
-# --- How to test this function with your sample image ---
-# 1. set your sample image (sample_image.png)
-#    into the same directory as your Python script, "Fractured-Rock-Image-Reconstruction-GAN/data/sample_data/sample_image.png", or provide its full path.
-# 2. Replace 'sample_image.png' with the actual file name.
+# --- Example usage (replace with your actual sample image path) ---
+sample_image_path = 'data/sample_data/sample_image.png' # Update this to your actual path
+# Make sure Figure_3.png is named as sample_image.png or change path above
+processed_sample_img = preprocess_image(sample_image_path, plot_steps=True)
 
-# Example usage:
-if __name__ == '__main__':
-    sample_image_path = 'data/sample_data/sample_image.png'
-    processed_sample_img = preprocess_image(sample_image_path, plot_steps=True)
-
-    if processed_sample_img is not None:
-        print(f"Processed image shape: {processed_sample_img.shape}")
-    else:
-        print("Image processing failed.")
+if processed_sample_img is not None:
+    print(f"Processed image shape: {processed_sample_img.shape}")
+else:
+    print("Image processing failed.")
