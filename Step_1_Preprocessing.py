@@ -40,6 +40,17 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.title("Original Image")
             plt.imshow(img, cmap='gray')
             plt.axis('off')
+            # plt.show()
+        
+        # 2. Threshold to identify non-black regions (the circle)
+        # Assuming black is 0. Any pixel > 0 is part of the rock.
+        _, binary_mask = cv2.threshold(img, 1, 255, cv2.THRESH_BINARY)
+
+        if plot_steps:
+            plt.subplot(1, 4, 2)
+            plt.title("Binary Mask")
+            plt.imshow(binary_mask, cmap='gray')
+            plt.axis('off')
             plt.show()
 
         return None
