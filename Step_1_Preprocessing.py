@@ -63,11 +63,12 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             maxRadius=img.shape[0] // 2 # Maximum radius (e.g., 1/2 of image height, as it's a diameter)
         )
 
+        # 3.1. if circle is find
         if circles is None:
             print(f"No circles found in {image_path}. Skipping.")
             return None
 
-        # Ensure we only consider the most prominent circle
+        # 3.2. Ensure we only consider the most prominent circle
         circles = np.uint16(np.around(circles))
         # Take the first and likely most confident circle detected
         x, y, r = circles[0, 0]
