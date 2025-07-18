@@ -15,7 +15,8 @@ import matplotlib.pyplot as plt
 
 def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
     """
-    Loads an image, crops the circular region to a square, and resizes it.
+    Loads an image, robustly identifies the main circular rock region,
+    crops it to a square, and resizes it. This version aims to exclude annotations.
 
     Args:
         image_path (str): Path to the input image.
@@ -42,9 +43,8 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.axis('off')
             # plt.show()
         
-        # 2. Threshold to identify non-black regions (the circle)
-        # Assuming black is 0. Any pixel > 0 is part of the rock.
-        _, binary_mask = cv2.threshold(img, 1, 255, cv2.THRESH_BINARY)
+        # 2. Apply a blur to help HoughCircles (reduces noise)
+        blurred_img = cv2.medianBlur(img, 5) # Median blur is good for preserving edges while removing noise
 
         # 2.2. plot image if plot_steps == true
         if plot_steps:
