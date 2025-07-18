@@ -28,6 +28,7 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
     try:
         # 1. Load the image
         img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE) # Load as grayscale
+
         if img is None:
             print(f"Error: Could not load image from {image_path}")
             return None
@@ -39,9 +40,27 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.title("Original Image")
             plt.imshow(img, cmap='gray')
             plt.axis('off')
+            plt.show()
 
         return None
 
     except Exception as e:
         print(f"An error occurred while processing {image_path}: {e}")
+        print(3)
         return None
+
+
+# --- How to test this function with your sample image ---
+# 1. set your sample image (sample_image.png)
+#    into the same directory as your Python script, "Fractured-Rock-Image-Reconstruction-GAN/data/sample_data/sample_image.png", or provide its full path.
+# 2. Replace 'sample_image.png' with the actual file name.
+
+# Example usage:
+if __name__ == '__main__':
+    sample_image_path = 'data/sample_data/sample_image.png'
+    processed_sample_img = preprocess_image(sample_image_path, plot_steps=True)
+
+    if processed_sample_img is not None:
+        print(f"Processed image shape: {processed_sample_img.shape}")
+    else:
+        print("Image processing failed.")
