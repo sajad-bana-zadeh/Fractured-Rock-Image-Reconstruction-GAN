@@ -109,6 +109,30 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             print(f"Error: Calculated side_length for inner square is zero or negative ({side_length}). Skipping.")
             return None
 
+        # 5. Calculate the coordinates of the inscribed square
+        # Top-left corner (x1, y1) and bottom-right corner (x2, y2)
+        x1 = x_circle - half_side
+        y1 = y_circle - half_side
+        x2 = x_circle + half_side
+        y2 = y_circle + half_side
+
+        # 5.1. Ensure these coordinates are within the original image boundaries
+        x1 = max(0, x1)
+        y1 = max(0, y1)
+        x2 = min(original_w, x2)
+        y2 = min(original_h, y2)
+
+        # 5.2. Adjust dimensions to be exact side_length if possible,
+        # otherwise, this crop might be slightly off-center if it hit image bounds.
+        # For simplicity, if it hits bounds, we just crop what's available.
+        # This will result in a slightly smaller-than-ideal inner square, but still valid.
+        actual_cropped_width = x2 - x1
+        actual_cropped_height = y2 - y1
+
+        # 5.3. If actual cropped size
+        if actual_cropped_width <= 0 or actual_cropped_height <= 0:
+            print(f"Error: Invalid actual crop dimensions ({actual_cropped_width}x{actual_cropped_height}) for {image_path}. Skipping.")
+            return None
 
         # return resized_img
 
