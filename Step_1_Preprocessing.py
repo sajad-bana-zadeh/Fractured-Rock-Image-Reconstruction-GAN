@@ -169,7 +169,7 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.tight_layout()
             plt.show()
 
-        # return resized_img
+        return resized_img
 
     except Exception as e:
         print(f"An error occurred while processing {image_path}: {e}")
