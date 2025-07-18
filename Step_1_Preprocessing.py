@@ -33,7 +33,7 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             print(f"Error: Could not load image from {image_path}")
             return None
 
-        # 2. plot image if plot_steps == true
+        # 1.2. plot image if plot_steps == true
         if plot_steps:
             plt.figure(figsize=(15, 5))
             plt.subplot(1, 4, 1)
@@ -46,12 +46,24 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         # Assuming black is 0. Any pixel > 0 is part of the rock.
         _, binary_mask = cv2.threshold(img, 1, 255, cv2.THRESH_BINARY)
 
+        # 2.2. plot image if plot_steps == true
         if plot_steps:
             plt.subplot(1, 4, 2)
             plt.title("Binary Mask")
             plt.imshow(binary_mask, cmap='gray')
             plt.axis('off')
-            plt.show()
+            # plt.show()
+        
+        # 3. Find contours in the binary mask
+        # Use cv2.RETR_EXTERNAL to get only outer contours, cv2.CHAIN_APPROX_SIMPLE for efficiency
+        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        if not contours:
+            print(f"No contours found in {image_path}. Skipping.")
+            return None
+        
+        # 3.1 Find the largest contour, which should be our circle
+        largest_contour = max(contours, key=cv2.contourArea)
 
         return None
 
