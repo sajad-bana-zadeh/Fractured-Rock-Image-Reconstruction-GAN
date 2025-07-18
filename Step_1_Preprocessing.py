@@ -26,6 +26,20 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         numpy.ndarray: The preprocessed square image, or None if processing fails.
     """
     try:
+        # 1. Load the image
+        img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE) # Load as grayscale
+        if img is None:
+            print(f"Error: Could not load image from {image_path}")
+            return None
+
+        # 2. plot image if plot_steps == true
+        if plot_steps:
+            plt.figure(figsize=(15, 5))
+            plt.subplot(1, 4, 1)
+            plt.title("Original Image")
+            plt.imshow(img, cmap='gray')
+            plt.axis('off')
+
         return None
 
     except Exception as e:
