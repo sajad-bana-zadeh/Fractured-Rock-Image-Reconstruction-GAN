@@ -68,6 +68,11 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         # 4. Get the minimum enclosing circle for the largest contour
         ((x, y), radius) = cv2.minEnclosingCircle(largest_contour)
 
+        # Ensure radius is not zero or too small
+        if radius < 5: # A small threshold to avoid issues with tiny artifacts
+            print(f"Warning: Radius too small ({radius:.2f}) for {image_path}. Skipping.")
+            return None
+
         return None
 
     except Exception as e:
