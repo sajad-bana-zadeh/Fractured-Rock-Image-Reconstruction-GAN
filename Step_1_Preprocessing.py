@@ -95,7 +95,16 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         if (y_end - y_start) < crop_size:
             y_start = max(0, y_end - crop_size)
         
+        # 6. Crop the image
+        cropped_img = img[y_start:y_end, x_start:x_end]
 
+        #‌ 6.2. plot image if plot_steps == true
+        if plot_steps:
+            plt.subplot(1, 4, 3)
+            plt.title(f"Cropped Image ({cropped_img.shape[1]}x{cropped_img.shape[0]})")
+            plt.imshow(cropped_img, cmap='gray')
+            plt.axis('off')
+        
         return None
 
     except Exception as e:
