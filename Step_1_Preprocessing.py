@@ -156,6 +156,19 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.title("Original with Inscribed Square")
             plt.imshow(img_with_square, cmap='gray')
             plt.axis('off')
+        
+        # 7. Resize the cropped image to the desired output size
+        resized_img = cv2.resize(cropped_img, output_size, interpolation=cv2.INTER_AREA)
+
+        # 7.1. Plot
+        if plot_steps:
+            plt.subplot(1, 5, 5)
+            plt.title(f"Resized Output ({output_size[0]}x{output_size[1]})")
+            plt.imshow(resized_img, cmap='gray')
+            plt.axis('off')
+            plt.tight_layout()
+            plt.show()
+
         # return resized_img
 
     except Exception as e:
