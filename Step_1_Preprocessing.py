@@ -104,8 +104,20 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
             plt.title(f"Cropped Image ({cropped_img.shape[1]}x{cropped_img.shape[0]})")
             plt.imshow(cropped_img, cmap='gray')
             plt.axis('off')
-        
-        return None
+            # plt.show()
+    
+        # 7. Resize the cropped image to the desired output size
+        resized_img = cv2.resize(cropped_img, output_size, interpolation=cv2.INTER_AREA)
+
+        #‌ 7.2. plot image if plot_steps == true
+        if plot_steps:
+            plt.subplot(1, 4, 4)
+            plt.title(f"Resized Image ({output_size[0]}x{output_size[1]})")
+            plt.imshow(resized_img, cmap='gray')
+            plt.axis('off')
+            plt.show()
+
+        return resized_img
 
     except Exception as e:
         print(f"An error occurred while processing {image_path}: {e}")
