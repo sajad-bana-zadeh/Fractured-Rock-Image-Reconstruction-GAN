@@ -45,25 +45,32 @@ def preprocess_image(image_path, output_size=(256, 256), plot_steps=False):
         
         # 2. Apply a blur to help HoughCircles (reduces noise)
         blurred_img = cv2.medianBlur(img, 5) # Median blur is good for preserving edges while removing noise
-
-        # 2.2. plot image if plot_steps == true
-        if plot_steps:
-            plt.subplot(1, 4, 2)
-            plt.title("Binary Mask")
-            plt.imshow(binary_mask, cmap='gray')
-            plt.axis('off')
-            # plt.show()
         
-        # 3. Find contours in the binary mask
-        # Use cv2.RETR_EXTERNAL to get only outer contours, cv2.CHAIN_APPROX_SIMPLE for efficiency
-        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # 3. Detect circles using HoughCircles
+        # dp: inverse ratio of the accumulator resolution to the image resolution.
+        # minDist: minimum distance between the centers of the detected circles.
+        # param1: upper threshold for the Canny edge detector (internal).
+        # param2: accumulator threshold for the circle centers at the detection stage.
+        # minRadius/maxRadius: expected range of radii of circles.
+        circles = cv2.HoughCircles(
+            blurred_img,
+            cv2.HOUGH_GRADIENT,
+            dp=1,
+            minDist=img.shape[0] // 8, # Minimum distance between centers (e.g., 1/8th of image height)
+            param1=100, # Canny upper threshold
+            param2=30,  # Accumulator threshold
+            minRadius=img.shape[0] // 4, # Minimum radius (e.g., 1/4th of image height)
+            maxRadius=img.shape[0] // 2 # Maximum radius (e.g., 1/2 of image height, as it's a diameter)
+        )
 
-        if not contours:
-            print(f"No contours found in {image_path}. Skipping.")
+        if circles is None:
+            print(f"No circles found in {image_path}. Skipping.")
             return None
-        
-        # 3.1 Find the largest contour, which should be our circle
-        largest_contour = max(contours, key=cv2.contourArea)
+
+        # Ensure we only consider the most prominent circle
+        circles = np.uint16(np.around(circles))
+        # Take the first and likely most confident circle detected
+        x, y, r = circles[0, 0]
 
         # 4. Get the minimum enclosing circle for the largest contour
         ((x, y), radius) = cv2.minEnclosingCircle(largest_contour)
